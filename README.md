@@ -1,6 +1,4 @@
-# Confluence Cloud Setup - Senior Technical Specialist Exercise
 
-This project implements the Senior Technical Specialist take-home exercise for setting up a Confluence Cloud site with users, groups, spaces, and content using the Confluence REST API.
 
 ## 🎯 Overview
 
@@ -92,13 +90,6 @@ The script will:
 
 ## 🔧 Configuration
 
-### Environment Variables
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `CONFLUENCE_URL` | Your Confluence Cloud site URL | `https://your-domain.atlassian.net` |
-| `CONFLUENCE_EMAIL` | Your Atlassian account email | `your-email@example.com` |
-| `CONFLUENCE_API_TOKEN` | Your API token | `ATATT3xFfGF0...` |
 
 ### API Token Setup
 
