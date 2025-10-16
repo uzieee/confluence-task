@@ -1,8 +1,8 @@
 # Confluence Cloud API Configuration
-CONFLUENCE_URL=https://your-domain.atlassian.net
-CONFLUENCE_EMAIL=your-email@example.com
-CONFLUENCE_API_TOKEN=your-api-token-here
+CONFLUENCE_URL=
+CONFLUENCE_EMAIL=
+CONFLUENCE_API_TOKEN=
 
 # Site Configuration
-SITE_NAME=Confluence Test Site
-SITE_DOMAIN=your-domain
+SITE_NAME=
+SITE_DOMAIN=
