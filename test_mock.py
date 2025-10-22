@@ -169,6 +169,8 @@ class MockConfluenceSetup:
         
         space_configs = [
             {'key': 'ADMIN', 'name': 'Administrator Space', 'description': 'Space restricted to administrators only'},
+            {'key': 'RESTRICTED', 'name': 'Restricted Workspace', 'description': 'Highly restricted workspace for sensitive information'},
+            {'key': 'COLLAB', 'name': 'Collaborative Workspace', 'description': 'Open collaborative workspace for team projects'},
             {'key': 'TEAM', 'name': 'Team Space', 'description': 'Space for team collaboration'},
             {'key': 'PUBLIC', 'name': 'Public Space', 'description': 'Public space with read access for all users'}
         ]

@@ -46,7 +46,7 @@ def test_users_exist():
 
 def test_spaces_exist():
     """Test if required spaces were created."""
-    expected_spaces = ['ADMIN', 'TEAM', 'PUBLIC']
+    expected_spaces = ['ADMIN', 'RESTRICTED', 'COLLAB', 'TEAM', 'PUBLIC']
     
     print("🔍 Checking for required spaces...")
     try:

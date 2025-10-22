@@ -131,6 +131,18 @@ class ConfluenceSetup:
                 'permissions': 'admin_only'
             },
             {
+                'key': 'RESTRICTED',
+                'name': 'Restricted Workspace',
+                'description': 'Highly restricted workspace for sensitive information',
+                'permissions': 'restricted_access'
+            },
+            {
+                'key': 'COLLAB',
+                'name': 'Collaborative Workspace',
+                'description': 'Open collaborative workspace for team projects',
+                'permissions': 'collaborative'
+            },
+            {
                 'key': 'TEAM',
                 'name': 'Team Space',
                 'description': 'Space for team collaboration',
@@ -176,6 +188,39 @@ class ConfluenceSetup:
         try:
             if permission_type == 'admin_only':
                 # Only administrators can view and edit
+                permissions = [
+                    {
+                        'subject': {'type': 'user', 'identifier': 'admin-user'},
+                        'operation': {'operation': 'read', 'targetType': 'space'},
+                        'anonymousAccess': False
+                    },
+                    {
+                        'subject': {'type': 'user', 'identifier': 'admin-user'},
+                        'operation': {'operation': 'write', 'targetType': 'space'},
+                        'anonymousAccess': False
+                    }
+                ]
+            elif permission_type == 'restricted_access':
+                # Highly restricted - only specific admin users
+                permissions = [
+                    {
+                        'subject': {'type': 'user', 'identifier': 'admin-user'},
+                        'operation': {'operation': 'read', 'targetType': 'space'},
+                        'anonymousAccess': False
+                    },
+                    {
+                        'subject': {'type': 'user', 'identifier': 'admin-user'},
+                        'operation': {'operation': 'write', 'targetType': 'space'},
+                        'anonymousAccess': False
+                    },
+                    {
+                        'subject': {'type': 'user', 'identifier': 'admin-user'},
+                        'operation': {'operation': 'admin', 'targetType': 'space'},
+                        'anonymousAccess': False
+                    }
+                ]
+            elif permission_type == 'collaborative':
+                # Open collaborative workspace - all users can read and write
                 permissions = [
                     {
                         'subject': {'type': 'user', 'identifier': 'admin-user'},
@@ -245,6 +290,48 @@ class ConfluenceSetup:
                 'permissions': 'admin_only'
             },
             {
+                'space_key': 'RESTRICTED',
+                'title': 'Confidential Information',
+                'content': '''
+                <h1>Confidential Information</h1>
+                <p>This workspace contains highly sensitive and confidential information.</p>
+                <h2>Security Protocols</h2>
+                <ul>
+                    <li>Access is strictly limited to authorized personnel</li>
+                    <li>All content is encrypted and protected</li>
+                    <li>Regular security audits are conducted</li>
+                </ul>
+                <h2>Compliance Requirements</h2>
+                <ul>
+                    <li>GDPR compliance documentation</li>
+                    <li>Security incident procedures</li>
+                    <li>Data retention policies</li>
+                </ul>
+                ''',
+                'permissions': 'restricted_access'
+            },
+            {
+                'space_key': 'COLLAB',
+                'title': 'Collaborative Project Hub',
+                'content': '''
+                <h1>Collaborative Project Hub</h1>
+                <p>Welcome to our open collaborative workspace! This space encourages innovation and teamwork.</p>
+                <h2>Project Management</h2>
+                <ul>
+                    <li>Active project tracking</li>
+                    <li>Team collaboration tools</li>
+                    <li>Real-time updates and notifications</li>
+                </ul>
+                <h2>Innovation Lab</h2>
+                <ul>
+                    <li>Brainstorming sessions</li>
+                    <li>Prototype development</li>
+                    <li>Knowledge sharing</li>
+                </ul>
+                ''',
+                'permissions': 'collaborative'
+            },
+            {
                 'space_key': 'TEAM',
                 'title': 'Team Guidelines',
                 'content': '''
@@ -306,6 +393,48 @@ class ConfluenceSetup:
         
         # Create blog posts
         blog_configs = [
+            {
+                'space_key': 'RESTRICTED',
+                'title': 'Security Alert - System Maintenance',
+                'content': '''
+                <h1>Security Alert - System Maintenance</h1>
+                <p>This is a confidential security update for authorized personnel only.</p>
+                <h2>Security Updates</h2>
+                <ul>
+                    <li>Critical security patches applied</li>
+                    <li>Access logs reviewed and analyzed</li>
+                    <li>New security protocols implemented</li>
+                </ul>
+                <h2>Action Required</h2>
+                <ul>
+                    <li>All users must update their passwords</li>
+                    <li>Two-factor authentication is now mandatory</li>
+                    <li>Regular security training sessions scheduled</li>
+                </ul>
+                ''',
+                'permissions': 'restricted_access'
+            },
+            {
+                'space_key': 'COLLAB',
+                'title': 'Innovation Spotlight - New Ideas',
+                'content': '''
+                <h1>Innovation Spotlight - New Ideas</h1>
+                <p>Sharing exciting new ideas and innovations from our collaborative workspace!</p>
+                <h2>Featured Innovations</h2>
+                <ul>
+                    <li>AI-powered automation tools</li>
+                    <li>Enhanced user experience designs</li>
+                    <li>Sustainable technology solutions</li>
+                </ul>
+                <h2>Collaboration Opportunities</h2>
+                <ul>
+                    <li>Cross-team project initiatives</li>
+                    <li>Knowledge sharing sessions</li>
+                    <li>Innovation workshops</li>
+                </ul>
+                ''',
+                'permissions': 'collaborative'
+            },
             {
                 'space_key': 'TEAM',
                 'title': 'Team Update - Project Status',
@@ -379,6 +508,39 @@ class ConfluenceSetup:
         try:
             if permission_type == 'admin_only':
                 # Only administrators can view and edit
+                permissions = [
+                    {
+                        'subject': {'type': 'user', 'identifier': 'admin-user'},
+                        'operation': {'operation': 'read', 'targetType': 'content'},
+                        'anonymousAccess': False
+                    },
+                    {
+                        'subject': {'type': 'user', 'identifier': 'admin-user'},
+                        'operation': {'operation': 'write', 'targetType': 'content'},
+                        'anonymousAccess': False
+                    }
+                ]
+            elif permission_type == 'restricted_access':
+                # Highly restricted content - only specific admin users
+                permissions = [
+                    {
+                        'subject': {'type': 'user', 'identifier': 'admin-user'},
+                        'operation': {'operation': 'read', 'targetType': 'content'},
+                        'anonymousAccess': False
+                    },
+                    {
+                        'subject': {'type': 'user', 'identifier': 'admin-user'},
+                        'operation': {'operation': 'write', 'targetType': 'content'},
+                        'anonymousAccess': False
+                    },
+                    {
+                        'subject': {'type': 'user', 'identifier': 'admin-user'},
+                        'operation': {'operation': 'admin', 'targetType': 'content'},
+                        'anonymousAccess': False
+                    }
+                ]
+            elif permission_type == 'collaborative':
+                # Open collaborative content - all users can read and write
                 permissions = [
                     {
                         'subject': {'type': 'user', 'identifier': 'admin-user'},
