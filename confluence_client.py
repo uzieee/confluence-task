@@ -83,8 +83,8 @@ class ConfluenceClient:
         Create a new user in Confluence.
         
         Note: Confluence Cloud doesn't have a direct user creation API.
-        Users are typically managed through the Atlassian admin console.
-        This method simulates user creation for demonstration purposes.
+        Users must be created through the Atlassian admin console.
+        This method provides instructions for manual user creation.
         
         Args:
             username: Username for the new user
@@ -95,7 +95,23 @@ class ConfluenceClient:
         Returns:
             Created user information
         """
-        # Simulate user creation since Confluence Cloud doesn't have direct user creation API
+        print(f"  ⚠️ IMPORTANT: Confluence Cloud doesn't support direct user creation via API.")
+        print(f"  Users must be created manually through the Atlassian admin console.")
+        print(f"  ")
+        print(f"  📋 Manual User Creation Instructions:")
+        print(f"  1. Go to your Atlassian admin console: {self.base_url}/admin")
+        print(f"  2. Navigate to 'User management' > 'Users'")
+        print(f"  3. Click 'Invite users' or 'Add users'")
+        print(f"  4. Create user with these details:")
+        print(f"     - Username: {username}")
+        print(f"     - Email: {email}")
+        print(f"     - Display Name: {display_name}")
+        print(f"     - Admin privileges: {'Yes' if is_admin else 'No'}")
+        print(f"  ")
+        print(f"  ⏳ Please create this user manually, then press Enter to continue...")
+        input("  Press Enter when user creation is complete...")
+        
+        # Return user info for the setup to continue
         user = {
             'id': f'user-{username}',
             'username': username,
@@ -103,9 +119,7 @@ class ConfluenceClient:
             'displayName': display_name,
             'isAdmin': is_admin
         }
-        print(f"  ⚠️ Note: Confluence Cloud doesn't support direct user creation via API.")
-        print(f"  Users must be created through the Atlassian admin console.")
-        print(f"  Simulating user creation for: {username}")
+        print(f"  ✅ User {username} ready for setup")
         return user
     
     def get_users(self, limit: int = 50) -> List[Dict[str, Any]]:
@@ -121,6 +135,23 @@ class ConfluenceClient:
         # Confluence Cloud doesn't have a direct user list API
         # We'll return an empty list for now as this is typically managed by site admins
         return []
+    
+    def check_user_exists(self, username: str) -> bool:
+        """
+        Check if a user exists in the system.
+        
+        Args:
+            username: Username to check
+            
+        Returns:
+            True if user exists, False otherwise
+        """
+        try:
+            # Try to get user info - this will fail if user doesn't exist
+            self._make_request('GET', f'/rest/api/user?username={username}')
+            return True
+        except:
+            return False
     
     def create_group(self, group_name: str) -> Dict[str, Any]:
         """

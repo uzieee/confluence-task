@@ -27,8 +27,14 @@ class ConfluenceSetup:
         Create users as specified in the requirements:
         - 1 administrator user
         - 4 standard users
+        
+        Note: Users must be created manually through Atlassian admin console
+        as Confluence Cloud doesn't support direct user creation via API.
         """
         print("🔧 Setting up users...")
+        print("⚠️  IMPORTANT: Confluence Cloud requires manual user creation.")
+        print("   Users must be created through the Atlassian admin console.")
+        print()
         
         # User configurations
         user_configs = [
@@ -64,24 +70,46 @@ class ConfluenceSetup:
             }
         ]
         
+        print("📋 User Creation Instructions:")
+        print("=" * 50)
+        print("1. Go to your Atlassian admin console")
+        print("2. Navigate to 'User management' > 'Users'")
+        print("3. Click 'Invite users' or 'Add users'")
+        print("4. Create the following users:")
+        print()
+        
+        for i, config in enumerate(user_configs, 1):
+            print(f"User {i}: {config['display_name']}")
+            print(f"  - Username: {config['username']}")
+            print(f"  - Email: {config['email']}")
+            print(f"  - Admin privileges: {'Yes' if config['is_admin'] else 'No'}")
+            print()
+        
+        print("⏳ Please create all users manually, then press Enter to continue...")
+        input("Press Enter when all users are created...")
+        
+        # Verify users exist and add them to our tracking
         for config in user_configs:
             try:
-                print(f"  Creating user: {config['username']}")
-                user = self.client.create_user(
-                    username=config['username'],
-                    email=config['email'],
-                    display_name=config['display_name'],
-                    is_admin=config['is_admin']
-                )
-                self.users[config['username']] = user
-                print(f"  ✅ User {config['username']} created successfully")
-                time.sleep(1)  # Rate limiting
+                print(f"  Verifying user: {config['username']}")
+                if self.client.check_user_exists(config['username']):
+                    user = {
+                        'id': f'user-{config["username"]}',
+                        'username': config['username'],
+                        'email': config['email'],
+                        'displayName': config['display_name'],
+                        'isAdmin': config['is_admin']
+                    }
+                    self.users[config['username']] = user
+                    print(f"  ✅ User {config['username']} verified and ready")
+                else:
+                    print(f"  ❌ User {config['username']} not found. Please create this user first.")
+                    # Continue with other users even if one fails
                 
             except Exception as e:
-                print(f"  ❌ Failed to create user {config['username']}: {e}")
-                # Continue with other users even if one fails
+                print(f"  ❌ Failed to verify user {config['username']}: {e}")
         
-        print(f"✅ User setup completed. Created {len(self.users)} users.")
+        print(f"✅ User setup completed. {len(self.users)} users ready for setup.")
     
     def setup_groups(self) -> None:
         """
@@ -98,6 +126,11 @@ class ConfluenceSetup:
             
             # Add standard users to the group (exclude admin)
             standard_users = [username for username in self.users.keys() if username != 'admin-user']
+            
+            if not standard_users:
+                print("  ⚠️ No standard users available to add to group.")
+                print("  Please ensure users are created and verified first.")
+                return
             
             for username in standard_users:
                 try:

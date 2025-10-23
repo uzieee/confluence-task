@@ -53,6 +53,7 @@ The solution is built with Python and includes:
 1. **Confluence Cloud Account**: Create a free account at [Atlassian Cloud](https://www.atlassian.com/)
 2. **Python 3.7+**: Ensure Python is installed on your system
 3. **API Token**: Generate an API token from your Atlassian account
+4. **⚠️ Manual User Creation**: Users must be created manually (see User Creation Guide below)
 
 ### Installation
 
@@ -79,6 +80,16 @@ The solution is built with Python and includes:
    CONFLUENCE_API_TOKEN=your-api-token-here
    ```
 
+### ⚠️ Important: User Creation Required
+
+**Confluence Cloud does not support direct user creation via REST API.** Users must be created manually through the Atlassian admin console.
+
+**Before running the setup script:**
+1. Read the [User Creation Guide](user_creation_guide.md)
+2. Create all 5 users manually in your Confluence admin console
+3. Ensure one user has administrator privileges
+4. Then run the setup script
+
 ### Running the Setup
 
 Execute the main script to run the complete setup:
@@ -88,7 +99,7 @@ python main.py
 ```
 
 The script will:
-1. Create users with appropriate roles
+1. **Verify users exist** (created manually)
 2. Set up groups and add users
 3. Create spaces with proper permissions
 4. Generate sample content (pages and blog posts)
