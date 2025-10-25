@@ -265,7 +265,6 @@ class ConfluenceSetup:
                     <li>Data retention policies</li>
                 </ul>
                 ''',
-                'permissions': 'restricted_access'
             },
             {
                 'space_key': 'COLLAB',
@@ -286,7 +285,6 @@ class ConfluenceSetup:
                     <li>Knowledge sharing</li>
                 </ul>
                 ''',
-                'permissions': 'collaborative'
             },
             {
                 'space_key': 'TEAM',
@@ -372,7 +370,6 @@ class ConfluenceSetup:
                     <li>Regular security training sessions scheduled</li>
                 </ul>
                 ''',
-                'permissions': 'restricted_access'
             },
             {
                 'space_key': 'COLLAB',
@@ -393,7 +390,6 @@ class ConfluenceSetup:
                     <li>Innovation workshops</li>
                 </ul>
                 ''',
-                'permissions': 'collaborative'
             },
             {
                 'space_key': 'TEAM',
