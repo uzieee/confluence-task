@@ -39,31 +39,31 @@ class ConfluenceSetup:
         # User configurations
         user_configs = [
             {
-                'username': 'admin-user',
+                'username': 'PepikM',
                 'email': 'admin@example.com',
                 'display_name': 'Administrator User',
                 'is_admin': True
             },
             {
-                'username': 'user-1',
+                'username': 'user1',
                 'email': 'user1@example.com',
                 'display_name': 'Standard User 1',
                 'is_admin': False
             },
             {
-                'username': 'user-2',
+                'username': 'user2',
                 'email': 'user2@example.com',
                 'display_name': 'Standard User 2',
                 'is_admin': False
             },
             {
-                'username': 'user-3',
+                'username': 'user3',
                 'email': 'user3@example.com',
                 'display_name': 'Standard User 3',
                 'is_admin': False
             },
             {
-                'username': 'user-4',
+                'username': 'User 4',
                 'email': 'user4@example.com',
                 'display_name': 'Standard User 4',
                 'is_admin': False
@@ -121,11 +121,17 @@ class ConfluenceSetup:
         try:
             # Create the group
             print(f"  Creating group: {self.group_name}")
-            group = self.client.create_group(self.group_name)
-            print(f"  ✅ Group {self.group_name} created successfully")
+            try:
+                group = self.client.create_group(self.group_name)
+                print(f"  ✅ Group {self.group_name} created successfully")
+            except Exception as group_error:
+                if "already exists" in str(group_error) or "Group already exists" in str(group_error):
+                    print(f"  ⚠️ Group {self.group_name} already exists - using existing group")
+                else:
+                    raise group_error
             
             # Add standard users to the group (exclude admin)
-            standard_users = [username for username in self.users.keys() if username != 'admin-user']
+            standard_users = [username for username in self.users.keys() if username != 'PepikM']
             
             if not standard_users:
                 print("  ⚠️ No standard users available to add to group.")
@@ -160,32 +166,27 @@ class ConfluenceSetup:
             {
                 'key': 'ADMIN',
                 'name': 'Administrator Space',
-                'description': 'Space restricted to administrators only',
-                'permissions': 'admin_only'
+                'description': 'Space restricted to administrators only'
             },
             {
                 'key': 'RESTRICTED',
                 'name': 'Restricted Workspace',
-                'description': 'Highly restricted workspace for sensitive information',
-                'permissions': 'restricted_access'
+                'description': 'Highly restricted workspace for sensitive information'
             },
             {
                 'key': 'COLLAB',
                 'name': 'Collaborative Workspace',
-                'description': 'Open collaborative workspace for team projects',
-                'permissions': 'collaborative'
+                'description': 'Open collaborative workspace for team projects'
             },
             {
                 'key': 'TEAM',
                 'name': 'Team Space',
-                'description': 'Space for team collaboration',
-                'permissions': 'group_based'
+                'description': 'Space for team collaboration'
             },
             {
                 'key': 'PUBLIC',
                 'name': 'Public Space',
-                'description': 'Public space with read access for all users',
-                'permissions': 'public_read'
+                'description': 'Public space with read access for all users'
             }
         ]
         
@@ -200,104 +201,28 @@ class ConfluenceSetup:
                 self.spaces[config['key']] = space
                 print(f"  ✅ Space {config['key']} created successfully")
                 
-                # Set permissions based on configuration
-                self._set_space_permissions(config['key'], config['permissions'])
+                # Note: Space permissions must be set manually in Confluence admin console
+                print(f"  ⚠️ Note: Set space permissions manually for {config['key']} in Confluence admin console")
                 
                 time.sleep(1)  # Rate limiting
                 
             except Exception as e:
-                print(f"  ❌ Failed to create space {config['key']}: {e}")
+                if "already exists" in str(e) or "Space keys must be unique" in str(e):
+                    print(f"  ⚠️ Space {config['key']} already exists - using existing space")
+                    # Try to get existing space
+                    try:
+                        space = self.client.get_space(config['key'])
+                        self.spaces[config['key']] = space
+                        print(f"  ✅ Using existing space {config['key']}")
+                        # Note: Space permissions must be set manually in Confluence admin console
+                        print(f"  ⚠️ Note: Set space permissions manually for {config['key']} in Confluence admin console")
+                    except:
+                        print(f"  ❌ Could not access existing space {config['key']}")
+                else:
+                    print(f"  ❌ Failed to create space {config['key']}: {e}")
         
         print(f"✅ Space setup completed. Created {len(self.spaces)} spaces.")
     
-    def _set_space_permissions(self, space_key: str, permission_type: str) -> None:
-        """
-        Set permissions for a space based on the permission type.
-        
-        Args:
-            space_key: Space key
-            permission_type: Type of permissions to set
-        """
-        try:
-            if permission_type == 'admin_only':
-                # Only administrators can view and edit
-                permissions = [
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'read', 'targetType': 'space'},
-                        'anonymousAccess': False
-                    },
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'write', 'targetType': 'space'},
-                        'anonymousAccess': False
-                    }
-                ]
-            elif permission_type == 'restricted_access':
-                # Highly restricted - only specific admin users
-                permissions = [
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'read', 'targetType': 'space'},
-                        'anonymousAccess': False
-                    },
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'write', 'targetType': 'space'},
-                        'anonymousAccess': False
-                    },
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'admin', 'targetType': 'space'},
-                        'anonymousAccess': False
-                    }
-                ]
-            elif permission_type == 'collaborative':
-                # Open collaborative workspace - all users can read and write
-                permissions = [
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'read', 'targetType': 'space'},
-                        'anonymousAccess': False
-                    },
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'write', 'targetType': 'space'},
-                        'anonymousAccess': False
-                    }
-                ]
-            elif permission_type == 'group_based':
-                # Group members can view and edit
-                permissions = [
-                    {
-                        'subject': {'type': 'group', 'identifier': self.group_name},
-                        'operation': {'operation': 'read', 'targetType': 'space'},
-                        'anonymousAccess': False
-                    },
-                    {
-                        'subject': {'type': 'group', 'identifier': self.group_name},
-                        'operation': {'operation': 'write', 'targetType': 'space'},
-                        'anonymousAccess': False
-                    }
-                ]
-            elif permission_type == 'public_read':
-                # All users can read, only administrators can write
-                permissions = [
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'write', 'targetType': 'space'},
-                        'anonymousAccess': False
-                    }
-                ]
-            else:
-                print(f"  ⚠️ Unknown permission type: {permission_type}")
-                return
-            
-            self.client.set_space_permissions(space_key, permissions)
-            print(f"  ✅ Permissions set for space {space_key}")
-            
-        except Exception as e:
-            print(f"  ❌ Failed to set permissions for space {space_key}: {e}")
     
     def setup_content(self) -> None:
         """
@@ -320,7 +245,6 @@ class ConfluenceSetup:
                     <li>User management procedures</li>
                 </ul>
                 ''',
-                'permissions': 'admin_only'
             },
             {
                 'space_key': 'RESTRICTED',
@@ -416,13 +340,16 @@ class ConfluenceSetup:
                 self.content[config['title']] = page
                 print(f"  ✅ Page '{config['title']}' created successfully")
                 
-                # Set content permissions
-                self._set_content_permissions(page['id'], config['permissions'])
+                # Note: Content permissions must be set manually in Confluence
+                print(f"  ⚠️ Note: Set content permissions manually for '{config['title']}' in Confluence")
                 
                 time.sleep(1)  # Rate limiting
                 
             except Exception as e:
-                print(f"  ❌ Failed to create page '{config['title']}': {e}")
+                if "already exists" in str(e) or "same TITLE" in str(e):
+                    print(f"  ⚠️ Page '{config['title']}' already exists - skipping")
+                else:
+                    print(f"  ❌ Failed to create page '{config['title']}': {e}")
         
         # Create blog posts
         blog_configs = [
@@ -520,104 +447,19 @@ class ConfluenceSetup:
                 self.content[config['title']] = blog_post
                 print(f"  ✅ Blog post '{config['title']}' created successfully")
                 
-                # Set content permissions
-                self._set_content_permissions(blog_post['id'], config['permissions'])
+                # Note: Content permissions must be set manually in Confluence
+                print(f"  ⚠️ Note: Set content permissions manually for '{config['title']}' in Confluence")
                 
                 time.sleep(1)  # Rate limiting
                 
             except Exception as e:
-                print(f"  ❌ Failed to create blog post '{config['title']}': {e}")
+                if "already exists" in str(e) or "same TITLE" in str(e):
+                    print(f"  ⚠️ Blog post '{config['title']}' already exists - skipping")
+                else:
+                    print(f"  ❌ Failed to create blog post '{config['title']}': {e}")
         
         print(f"✅ Content setup completed. Created {len(self.content)} content items.")
     
-    def _set_content_permissions(self, content_id: str, permission_type: str) -> None:
-        """
-        Set permissions for content based on the permission type.
-        
-        Args:
-            content_id: Content ID
-            permission_type: Type of permissions to set
-        """
-        try:
-            if permission_type == 'admin_only':
-                # Only administrators can view and edit
-                permissions = [
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'read', 'targetType': 'content'},
-                        'anonymousAccess': False
-                    },
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'write', 'targetType': 'content'},
-                        'anonymousAccess': False
-                    }
-                ]
-            elif permission_type == 'restricted_access':
-                # Highly restricted content - only specific admin users
-                permissions = [
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'read', 'targetType': 'content'},
-                        'anonymousAccess': False
-                    },
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'write', 'targetType': 'content'},
-                        'anonymousAccess': False
-                    },
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'admin', 'targetType': 'content'},
-                        'anonymousAccess': False
-                    }
-                ]
-            elif permission_type == 'collaborative':
-                # Open collaborative content - all users can read and write
-                permissions = [
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'read', 'targetType': 'content'},
-                        'anonymousAccess': False
-                    },
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'write', 'targetType': 'content'},
-                        'anonymousAccess': False
-                    }
-                ]
-            elif permission_type == 'group_based':
-                # Group members can view and edit
-                permissions = [
-                    {
-                        'subject': {'type': 'group', 'identifier': self.group_name},
-                        'operation': {'operation': 'read', 'targetType': 'content'},
-                        'anonymousAccess': False
-                    },
-                    {
-                        'subject': {'type': 'group', 'identifier': self.group_name},
-                        'operation': {'operation': 'write', 'targetType': 'content'},
-                        'anonymousAccess': False
-                    }
-                ]
-            elif permission_type == 'public_read':
-                # All users can read, only administrators can write
-                permissions = [
-                    {
-                        'subject': {'type': 'user', 'identifier': 'admin-user'},
-                        'operation': {'operation': 'write', 'targetType': 'content'},
-                        'anonymousAccess': False
-                    }
-                ]
-            else:
-                print(f"  ⚠️ Unknown permission type: {permission_type}")
-                return
-            
-            self.client.set_content_permissions(content_id, permissions)
-            print(f"  ✅ Permissions set for content {content_id}")
-            
-        except Exception as e:
-            print(f"  ❌ Failed to set permissions for content {content_id}: {e}")
     
     def run_setup(self) -> None:
         """Run the complete Confluence setup process."""
