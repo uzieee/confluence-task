@@ -39,8 +39,8 @@ class ConfluenceSetup:
         # User configurations
         user_configs = [
             {
-                'username': 'PepikM',
-                'email': 'admin@example.com',
+                'username': 'merveille',
+                'email': 'mmnjong@gmail.com',
                 'display_name': 'Administrator User',
                 'is_admin': True
             },
@@ -305,7 +305,6 @@ class ConfluenceSetup:
                     <li>Documentation standards</li>
                 </ul>
                 ''',
-                'permissions': 'group_based'
             },
             {
                 'space_key': 'PUBLIC',
@@ -322,7 +321,6 @@ class ConfluenceSetup:
                     <li>Contact information</li>
                 </ul>
                 ''',
-                'permissions': 'public_read'
             }
         ]
         
@@ -410,7 +408,6 @@ class ConfluenceSetup:
                     <li>Deployment preparation</li>
                 </ul>
                 ''',
-                'permissions': 'group_based'
             },
             {
                 'space_key': 'PUBLIC',
@@ -427,7 +424,6 @@ class ConfluenceSetup:
                 <h2>Looking Ahead</h2>
                 <p>We're excited about the upcoming quarter and the new initiatives we'll be launching.</p>
                 ''',
-                'permissions': 'public_read'
             }
         ]
         
